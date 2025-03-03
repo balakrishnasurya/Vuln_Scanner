@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, send_file
+from flask import Flask, render_template, jsonify, request, send_file, url_for
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Use non-GUI backend
@@ -13,14 +13,33 @@ import os
 import time
 from datetime import datetime
 import pdfkit
+import sys
 
 app = Flask(__name__)
 
-# Create directories if they don't exist
-if not os.path.exists('static/reports'):
-    os.makedirs('static/reports')
-if not os.path.exists('static/images'):
-    os.makedirs('static/images')
+# Configure wkhtmltopdf path
+if sys.platform == "win32":
+    WKHTMLTOPDF_PATH = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+else:
+    WKHTMLTOPDF_PATH = 'wkhtmltopdf'  # Linux/Mac usually have it in PATH
+
+# Initialize PDF configuration
+try:
+    config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
+    print(f"wkhtmltopdf configured at: {WKHTMLTOPDF_PATH}")
+except Exception as e:
+    print(f"Error configuring wkhtmltopdf: {e}")
+    config = None
+
+# Ensure directories exist with absolute paths
+base_dir = os.path.abspath(os.path.dirname(__file__))
+static_dir = os.path.join(base_dir, 'static')
+reports_dir = os.path.join(static_dir, 'reports')
+images_dir = os.path.join(static_dir, 'images')
+
+for dir_path in [reports_dir, images_dir]:
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
 # Security vulnerability check functions
 def check_for_header_vulnerabilities(headers):
@@ -191,31 +210,37 @@ def scan():
     # Generate plots
     plot1, plot2 = generate_plots(df)
     
-    # Save plots for PDF generation
-    plot1_path = f'static/images/severity_{timestamp}.png'
-    plot2_path = f'static/images/types_{timestamp}.png'
+    # Save plots with absolute paths
+    plot1_path = os.path.join(images_dir, f'severity_{timestamp}.png')
+    plot2_path = os.path.join(images_dir, f'types_{timestamp}.png')
     
-    with open(plot1_path, 'wb') as f:
-        f.write(base64.b64decode(plot1))
-    
-    with open(plot2_path, 'wb') as f:
-        f.write(base64.b64decode(plot2))
+    # Save the plot images
+    try:
+        with open(plot1_path, 'wb') as f:
+            f.write(base64.b64decode(plot1))
+        
+        with open(plot2_path, 'wb') as f:
+            f.write(base64.b64decode(plot2))
+        
+        print(f"Plots saved at: {plot1_path} and {plot2_path}")
+    except Exception as e:
+        print(f"Error saving plots: {e}")
     
     # Generate PDF report
-    pdf_path = f'static/reports/vulnerability_report_{timestamp}.pdf'
+    pdf_path = os.path.join(reports_dir, f'vulnerability_report_{timestamp}.pdf')
     
     # Use absolute paths for images in the PDF
-    abs_plot1 = os.path.abspath(plot1_path)
-    abs_plot2 = os.path.abspath(plot2_path)
+    plot1_url = url_for('static', filename=f'images/severity_{timestamp}.png', _external=True)
+    plot2_url = url_for('static', filename=f'images/types_{timestamp}.png', _external=True)
     
     html_content = render_template('report.html', 
                                 url=url, 
                                 results=results, 
                                 timestamp=scan_time,
-                                plot1=abs_plot1,
-                                plot2=abs_plot2)
+                                plot1=plot1_url,
+                                plot2=plot2_url)
     
-    # PDF generation options for better formatting
+    # PDF generation options
     options = {
         'page-size': 'A4',
         'margin-top': '20mm',
@@ -227,13 +252,20 @@ def scan():
         'enable-local-file-access': None
     }
     
-    # Generate PDF using pdfkit with options
-    try:
-        pdfkit.from_string(html_content, pdf_path, options=options)
-        pdf_url = f'/download/{timestamp}'
-    except Exception as e:
-        print(f"Error generating PDF: {e}")
-        pdf_url = None
+    # Generate PDF
+    pdf_url = None
+    if config is not None:
+        try:
+            pdfkit.from_string(html_content, pdf_path, options=options, configuration=config)
+            if os.path.exists(pdf_path):
+                pdf_url = f'/download/{timestamp}'
+                print(f"PDF generated successfully at {pdf_path}")
+            else:
+                print("PDF file was not created")
+        except Exception as e:
+            print(f"Error generating PDF: {e}")
+    else:
+        print("PDF generation disabled - wkhtmltopdf not configured")
     
     return render_template('results.html', 
                         url=url, 
@@ -246,19 +278,35 @@ def scan():
 @app.route('/download/<timestamp>')
 def download(timestamp):
     try:
-        pdf_path = f'static/reports/vulnerability_report_{timestamp}.pdf'
+        # Use absolute path for PDF file
+        pdf_filename = f'vulnerability_report_{timestamp}.pdf'
+        pdf_path = os.path.join(reports_dir, pdf_filename)
+        
         if os.path.exists(pdf_path):
-            return send_file(
-                pdf_path,
-                as_attachment=True,
-                download_name=f'vulnerability_report_{timestamp}.pdf',
-                mimetype='application/pdf'
-            )
+            try:
+                # Add response headers for better browser handling
+                response = send_file(
+                    pdf_path,
+                    mimetype='application/pdf',
+                    as_attachment=True,
+                    attachment_filename=pdf_filename,  # Using attachment_filename instead of download_name
+                    cache_timeout=0  # Prevent caching
+                )
+                response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+                response.headers["Pragma"] = "no-cache"
+                response.headers["Expires"] = "0"
+                return response
+            except Exception as e:
+                print(f"Error sending file: {e}")
+                return str(e), 500
         else:
+            print(f"PDF file not found at: {pdf_path}")
             return "PDF report not found", 404
     except Exception as e:
-        print(f"Error downloading PDF: {e}")
-        return "Error downloading report", 500
+        print(f"Error in download route: {e}")
+        return f"Error downloading report: {str(e)}", 500
 
 if __name__ == '__main__':
+    # Ensure the app can handle larger files
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
     app.run(debug=True)

@@ -267,9 +267,13 @@
                     <i class="fas fa-arrow-left"></i> New Scan
                 </a>
                 {% if pdf_url %}
-                <a href="{{ pdf_url }}" class="btn primary">
+                <a href="{{ pdf_url }}" class="btn primary" onclick="event.preventDefault(); window.location.href='{{ pdf_url }}';">
                     <i class="fas fa-file-pdf"></i> Download Report
                 </a>
+                {% else %}
+                <button class="btn primary" disabled title="PDF generation failed">
+                    <i class="fas fa-file-pdf"></i> Report Unavailable
+                </button>
                 {% endif %}
             </div>
         </section>
