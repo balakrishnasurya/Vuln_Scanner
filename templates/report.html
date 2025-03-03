@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Report | {{ url }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        @media print {
+            .navbar, footer, .actions {
+                display: none;
+            }
+            .container {
+                padding: 20px;
+                margin: 0;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+            .results-header {
+                margin-top: 0;
+            }
+            body {
+                background: white;
+            }
+            .chart-card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                SecureScanner
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/" class="btn primary">New Scan</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="results-header">
+            <h1>Security Assessment Report</h1>
+            <p>Comprehensive vulnerability analysis for {{ url }}</p>
+            <div class="actions">
+                <a href="/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back to Scanner</a>
+                <button onclick="window.print()" class="btn primary">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </section>
+
+        <section class="summary-section">
+            <div class="section-title">
+                <h2>Executive Summary</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Target URL</h3>
+                    <p>{{ url }}</p>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Total Issues</h3>
+                    <p>{{ results|length }}</p>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Assessment Date</h3>
+                    <p>{{ timestamp }}</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+        
+        <section class="visualization-section">
+            <div class="section-title">
+                <h2>Risk Assessment</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
+                    <div class="chart-body">
+                        <img src="{{ plot1 }}" alt="Severity Distribution" class="chart">
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Vulnerability Categories</h3>
+                    <div class="chart-body">
+                        <img src="{{ plot2 }}" alt="Vulnerability Types" class="chart">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section class="detailed-results">
+            <div class="section-title">
+                <h2>Detailed Findings</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-list"></i> Security Issues</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="15%">Type</th>
+                            <th width="20%">Vulnerability</th>
+                            <th width="50%">Description</th>
+                            <th width="15%">Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr class="severity-{{ result.severity|lower }}">
+                            <td><strong>{{ result.type }}</strong></td>
+                            <td>{{ result.name }}</td>
+                            <td>{{ result.description }}</td>
+                            <td>
+                                <span class="severity-badge {{ result.severity|lower }}">
+                                    {{ result.severity }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="recommendations">
+            <div class="section-title">
+                <h2>Recommendations</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Regular Scanning</h3>
+                    <p>Implement regular security scans to identify and address vulnerabilities proactively.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Code Reviews</h3>
+                    <p>Conduct thorough code reviews focusing on security best practices and vulnerability prevention.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>Regular Updates</h3>
+                    <p>Keep all software components and dependencies up to date with the latest security patches.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Security Training</h3>
+                    <p>Provide regular security awareness training to development and operations teams.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="copyright">
+                <p>&copy; 2024 Web Security Scanner</p>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

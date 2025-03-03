@@ -1,0 +1,33 @@
+Vulnerability,URL,Severity
+Local File Inclusion,http://testphp.vulnweb.com/showimage.php?file=../../etc/passwd,Critical
+XSS,http://testphp.vulnweb.com/search.php?test=query,Critical
+SQL,"http://testphp.vulnweb.com/artists.php?artist=1""",High
+SQL,"http://testphp.vulnweb.com/artists.php?artist=2""",High
+SQL,"http://testphp.vulnweb.com/artists.php?artist=3""",High
+SQL,"http://testphp.vulnweb.com/artists.php?artist=4""",High
+SQL,"http://testphp.vulnweb.com/artists.php?artist=5""",High
+SQL,"http://testphp.vulnweb.com/artists.php?artist=../../etc/passwd""",High
+Security Misconfiguration (allow_call_time_pass_reference is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (allow_url_fopen is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (display_errors is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (expose_php is set as On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.auto_start is Off),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.use_trans_sid is set to 0),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.cookie_secure is Off),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.cookie_httponly not set),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Outdated Component,http://testphp.vulnweb.com/,Medium
+Vulnerability,URL,Severity
+Vulnerability,URL,Severity
+Local File Inclusion,http://testphp.vulnweb.com/showimage.php?file=../../etc/passwd,Critical
+XSS,http://testphp.vulnweb.com/search.php?test=query,Critical
+SQL,"http://testphp.vulnweb.com/artists.php?files=2""",High
+SQL,"http://testphp.vulnweb.com/artists.php?showimage.php=../../etc/passwd""",High
+Security Misconfiguration (allow_call_time_pass_reference is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (allow_url_fopen is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (display_errors is On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (expose_php is set as On),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.auto_start is Off),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.use_trans_sid is set to 0),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.cookie_secure is Off),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Security Misconfiguration (session.cookie_httponly not set),http://testphp.vulnweb.com/secured/phpinfo.php,Low
+Outdated Component,http://testphp.vulnweb.com/,Medium
