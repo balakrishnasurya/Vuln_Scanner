@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Web Security Scanner{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --google-blue: #4285f4;
+            --google-red: #ea4335;
+            --google-yellow: #fbbc05;
+            --google-green: #34a853;
+            --google-grey: #9aa0a6;
+            --google-background: #f8f9fa;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            height: 64px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--google-blue);
+            font-size: 1.5rem;
+            font-weight: 500;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 24px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a:hover {
+            background: var(--google-background);
+            color: #202124;
+        }
+
+        .nav-links a.active {
+            color: var(--google-blue);
+            background: #e8f0fe;
+        }
+
+        .nav-links a i {
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 8px 24px;
+            border-radius: 24px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn.primary {
+            background: var(--google-blue);
+            color: white !important;
+        }
+
+        .btn.primary:hover {
+            background: #1a73e8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .btn.secondary {
+            color: var(--google-blue) !important;
+            border: 1px solid var(--google-blue);
+        }
+
+        .btn.secondary:hover {
+            background: #e8f0fe;
+        }
+
+        .flash-messages {
+            margin-top: 64px;
+            padding: 16px;
+        }
+
+        .alert {
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #e6f4ea;
+            color: var(--google-green);
+            border: 1px solid #ceead6;
+        }
+
+        .alert-danger {
+            background: #fce8e6;
+            color: var(--google-red);
+            border: 1px solid #fad2cf;
+        }
+
+        .alert-warning {
+            background: #fef7e0;
+            color: #f9ab00;
+            border: 1px solid #feefc3;
+        }
+
+        footer {
+            background: var(--google-background);
+            padding: 24px 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--google-blue);
+        }
+
+        main {
+            min-height: calc(100vh - 64px - 76px);
+            padding-top: 64px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                SecureScanner
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>
+                    <i class="fas fa-home"></i> Home
+                </a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('history') }}" {% if request.endpoint == 'history' %}class="active"{% endif %}>
+                        <i class="fas fa-history"></i> History
+                    </a>
+                    <a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}class="active"{% endif %}>
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}class="active"{% endif %}>
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="copyright">
+                <p>&copy; {{ datetime.now().year }} Web Security Scanner</p>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('about') }}">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

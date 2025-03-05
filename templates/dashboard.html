@@ -1,173 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <i class="fas fa-shield-alt"></i>
-                SecureScanner
+{% extends "base.html" %}
+
+{% block title %}Security Dashboard{% endblock %}
+
+{% block content %}
+<div class="google-style-container dashboard-container">
+    <section class="dashboard-header">
+        <h1>Security Dashboard</h1>
+        <p>Monitor and analyze your security scans</p>
+        <div class="dashboard-actions">
+            <a href="/" class="btn primary">
+                <i class="fas fa-search"></i> New Scan
             </a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/" class="btn primary">New Scan</a>
-            </div>
+            {% if has_data %}
+            <a href="/export" class="btn secondary">
+                <i class="fas fa-file-export"></i> Export Data
+            </a>
+            {% endif %}
         </div>
-    </nav>
+    </section>
 
-    <div class="container">
-        <section class="results-header">
-            <h1>Security Dashboard</h1>
-            <p>Monitoring and analysis of web security vulnerabilities</p>
-            <div class="actions">
-                <a href="/" class="btn primary"><i class="fas fa-search"></i> New Scan</a>
-                {% if has_data %}
-                <a href="/export-pdf" class="btn secondary"><i class="fas fa-file-pdf"></i> Export Report</a>
-                {% endif %}
-            </div>
-        </section>
-        
-        <section class="dashboard-stats">
-            <div class="section-title">
-                <h2>Overview</h2>
-                <div class="title-line"></div>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Scans</h3>
-                        <p class="stat-value">{{ total_scans }}</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>High Severity</h3>
-                        <p class="stat-value">{{ high_severity }}</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Medium Severity</h3>
-                        <p class="stat-value">{{ medium_severity }}</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon info">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Low Severity</h3>
-                        <p class="stat-value">{{ low_severity }}</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        {% if not has_data %}
-        <section class="dashboard-message">
-            <div class="message-card">
-                <div class="message-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h2>No Scan Data Available</h2>
-                <p>Start scanning websites to populate this dashboard with vulnerability data.</p>
-                <a href="/" class="btn primary"><i class="fas fa-search"></i> Start Scanning</a>
-            </div>
-        </section>
-        {% else %}
-        <section class="visualization-section">
-            <div class="section-title">
-                <h2>Vulnerability Analysis</h2>
-                <div class="title-line"></div>
-            </div>
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
-                    <div class="chart-body">
-                        <!-- Add your charts here -->
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-bar"></i> Vulnerability Types</h3>
-                    <div class="chart-body">
-                        <!-- Add your charts here -->
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="recent-scans">
-            <div class="section-title">
-                <h2>Recent Scans</h2>
-                <div class="title-line"></div>
-            </div>
-            <div class="table-container">
-                <div class="table-header">
-                    <h3><i class="fas fa-history"></i> Latest Security Scans</h3>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>URL</th>
-                            <th>Scan Date</th>
-                            <th>Vulnerabilities</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for scan in recent_scans %}
-                        <tr>
-                            <td>{{ scan.url }}</td>
-                            <td>{{ scan.date }}</td>
-                            <td>{{ scan.vulnerabilities }}</td>
-                            <td>
-                                <span class="severity-badge {{ scan.status|lower }}">
-                                    {{ scan.status }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="/results/{{ scan.id }}" class="btn secondary btn-sm">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-        {% endif %}
+    {% if not has_data %}
+    <div class="empty-state material-card">
+        <i class="fas fa-chart-line empty-icon"></i>
+        <h2>No Scan Data Available</h2>
+        <p>Start scanning websites to populate this dashboard with vulnerability data.</p>
+        <a href="/" class="btn primary">
+            <i class="fas fa-search"></i> Start Scanning
+        </a>
     </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="copyright">
-                <p>&copy; 2024 Web Security Scanner</p>
+    {% else %}
+    <div class="dashboard-grid">
+        <div class="stats-row">
+            <div class="material-card stat-card">
+                <div class="stat-icon primary">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Scans</h3>
+                    <p class="stat-value">{{ total_scans }}</p>
+                </div>
             </div>
-            <div class="footer-links">
-                <a href="/">Home</a>
-                <a href="/">New Scan</a>
+            <div class="material-card stat-card">
+                <div class="stat-icon danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>High Severity</h3>
+                    <p class="stat-value">{{ high_severity }}</p>
+                </div>
+            </div>
+            <div class="material-card stat-card">
+                <div class="stat-icon warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Medium Severity</h3>
+                    <p class="stat-value">{{ medium_severity }}</p>
+                </div>
+            </div>
+            <div class="material-card stat-card">
+                <div class="stat-icon info">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Low Severity</h3>
+                    <p class="stat-value">{{ low_severity }}</p>
+                </div>
             </div>
         </div>
-    </footer>
 
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-</body>
-</html>
+        <div class="recent-scans-section">
+            <div class="material-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Recent Scans</h3>
+                    <a href="{{ url_for('history') }}" class="btn secondary btn-sm">View All</a>
+                </div>
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Date</th>
+                                <th>Issues</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in recent_scans %}
+                            <tr>
+                                <td>{{ scan.url }}</td>
+                                <td>{{ scan.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>{{ scan.results|length }}</td>
+                                <td>
+                                    <span class="severity-badge {{ scan.status|lower }}">
+                                        {{ scan.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/results/{{ scan.id }}" class="btn secondary btn-sm">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        min-height: auto;
+        padding: 2rem;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        color: #202124;
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+    }
+
+    .dashboard-header p {
+        color: #5f6368;
+        margin: 0 0 1.5rem;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .dashboard-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.primary {
+        background: rgba(66,133,244,0.1);
+        color: #4285f4;
+    }
+
+    .stat-icon.danger {
+        background: rgba(234,67,53,0.1);
+        color: #ea4335;
+    }
+
+    .stat-icon.warning {
+        background: rgba(251,188,5,0.1);
+        color: #fbbc05;
+    }
+
+    .stat-icon.info {
+        background: rgba(52,168,83,0.1);
+        color: #34a853;
+    }
+
+    .stat-content h3 {
+        color: #5f6368;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .stat-value {
+        color: #202124;
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0.25rem 0 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #dadce0;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h2 {
+        color: #202124;
+        margin: 0 0 0.5rem;
+    }
+
+    .empty-state p {
+        color: #5f6368;
+        margin: 0 0 1.5rem;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid #dadce0;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

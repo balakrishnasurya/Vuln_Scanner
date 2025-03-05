@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}About | Web Security Scanner{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="about-section">
+        <div class="section-title">
+            <h1>About Web Security Scanner</h1>
+            <div class="title-line"></div>
+        </div>
+        
+        <div class="about-content">
+            <p class="intro">
+                Web Security Scanner is a comprehensive tool designed to help identify common security vulnerabilities in websites.
+                Our mission is to make web security accessible and understandable for everyone.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Security Headers</h3>
+                    <p>Checks for missing or misconfigured security headers that protect against common web attacks.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>SSL/TLS Check</h3>
+                    <p>Validates proper HTTPS implementation and identifies potential security risks.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Form Security</h3>
+                    <p>Detects insecure form submissions and missing CSRF protections.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cookie"></i>
+                    </div>
+                    <h3>Cookie Security</h3>
+                    <p>Analyzes cookie configurations for secure flags and best practices.</p>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <h2>Get in Touch</h2>
+                <p>Have questions or need support? Feel free to reach out to us.</p>
+                <a href="mailto:support@websecurityscanner.com" class="btn primary">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

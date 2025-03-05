@@ -1,246 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Security Scanner</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: Arial, sans-serif;
-            background: #fff;
-        }
+{% extends "base.html" %}
 
-        .navbar {
-            padding: 15px 30px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 20px;
-        }
+{% block title %}Web Security Scanner{% endblock %}
 
-        .nav-links a {
-            color: #3c4043;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 8px 12px;
-            border-radius: 4px;
-        }
-
-        .nav-links a:hover {
-            background: #f8f9fa;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            margin-top: -100px;
-        }
-
-        .logo-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-section h1 {
-            font-size: 4rem;
-            background: linear-gradient(45deg, #4285f4, #ea4335, #fbbc05, #34a853);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-            padding: 0;
-            font-weight: 500;
-            letter-spacing: -2px;
-        }
-
-        .logo-section p {
-            color: #5f6368;
-            margin-top: 10px;
-            font-size: 1rem;
-        }
-
-        .search-section {
-            max-width: 580px;
-            width: 90%;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-            border: 1px solid #dfe1e5;
-            border-radius: 24px;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .search-container:hover,
-        .search-container:focus-within {
-            box-shadow: 0 1px 6px rgba(32,33,36,.28);
-            border-color: transparent;
-        }
-
-        .search-container i {
-            color: #9aa0a6;
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-
-        .search-input {
-            flex-grow: 1;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            padding: 8px 0;
-            background: transparent;
-        }
-
-        .search-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .search-btn {
-            background: #f8f9fa;
-            border: 1px solid #f8f9fa;
-            border-radius: 4px;
-            color: #3c4043;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .search-btn:hover {
-            box-shadow: 0 1px 1px rgba(0,0,0,.1);
-            background-color: #f8f9fa;
-            border: 1px solid #dadce0;
-            color: #202124;
-        }
-
-        .search-btn.primary {
-            background: #4285f4;
-            color: white;
-            border: 1px solid #4285f4;
-        }
-
-        .search-btn.primary:hover {
-            background: #3574e5;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        footer {
-            background: #f2f2f2;
-            padding: 15px 30px;
-            border-top: 1px solid #dadce0;
-            color: #70757a;
-            font-size: 0.9rem;
-            margin-top: auto;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-links a {
-            color: #70757a;
-            text-decoration: none;
-            margin-left: 20px;
-        }
-
-        .footer-links a:hover {
-            color: #202124;
-        }
-
-        @media (max-width: 768px) {
-            .logo-section h1 {
-                font-size: 3rem;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-            
-            .footer-links {
-                margin-top: 10px;
-            }
-            
-            .footer-links a {
-                margin: 0 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-links">
-            <a href="#" onclick="showAbout()">About</a>
+{% block content %}
+<div class="google-style-container">
+    <div class="search-container">
+        <div class="logo">
+            <div class="logo-letters">
+                <span style="color: #4285f4">S</span>
+                <span style="color: #ea4335">e</span>
+                <span style="color: #fbbc05">c</span>
+                <span style="color: #4285f4">u</span>
+                <span style="color: #34a853">r</span>
+                <span style="color: #ea4335">e</span>
+            </div>
+            <div class="logo-text">Scanner</div>
         </div>
-    </nav>
-
-    <main class="main-content">
-        <div class="logo-section">
-            <h1>SecureScanner</h1>
-            <p>Check your website for security vulnerabilities</p>
-        </div>
-
-        <div class="search-section">
-            <form action="/scan" method="POST" id="scan-form">
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="url" class="search-input" placeholder="Enter website URL (e.g., example.com)" required autocomplete="off">
+        
+        <form action="{{ url_for('scan') }}" method="POST" class="google-style-form">
+            <div class="search-box-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="url" name="url" placeholder="Enter website URL to scan" required>
+                    <i class="fas fa-microphone voice-icon"></i>
                 </div>
                 <div class="search-buttons">
-                    <button type="submit" class="search-btn primary">Scan Website</button>
+                    <button type="submit" class="google-style-button primary">
+                        Security Scan
+                    </button>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="google-style-button secondary">
+                        Create Account
+                    </a>
+                    {% endif %}
                 </div>
-            </form>
-            
-            <div class="loading" id="loading" style="display:none;">
-                <div class="spinner"></div>
-                <p>Scanning website for vulnerabilities...</p>
+            </div>
+        </form>
+
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt" style="color: #4285f4"></i>
+                <span>Security Headers</span>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-lock" style="color: #34a853"></i>
+                <span>SSL Check</span>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-file-alt" style="color: #fbbc05"></i>
+                <span>Form Security</span>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cookie" style="color: #ea4335"></i>
+                <span>Cookie Security</span>
             </div>
         </div>
-    </main>
+    </div>
+</div>
+{% endblock %}
 
-    <footer>
-        <div class="footer-content">
-            <div class="copyright">
-                <span>&copy; 2024 Web Security Scanner</span>
-            </div>
-            <div class="footer-links">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-            </div>
-        </div>
-    </footer>
+{% block extra_css %}
+<style>
+.google-style-container {
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    <script>
-        document.getElementById('scan-form').addEventListener('submit', function() {
-            document.getElementById('loading').style.display = 'flex';
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Scanning...';
-        });
+.search-container {
+    margin-top: 10vh;
+    width: 100%;
+    max-width: 584px;
+    padding: 20px;
+}
 
-        function showAbout() {
-            alert('Web Security Scanner helps you identify security vulnerabilities in your website. Built with safety in mind.');
-        }
-    </script>
-</body>
-</html>
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.logo-letters {
+    font-family: 'Product Sans', Arial, sans-serif;
+    font-size: 5rem;
+    font-weight: 400;
+    letter-spacing: -2px;
+}
+
+.logo-text {
+    font-family: 'Product Sans', Arial, sans-serif;
+    font-size: 2rem;
+    color: #5f6368;
+    margin-top: -0.5rem;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    max-width: 584px;
+    margin: 0 auto;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-box:hover,
+.search-box:focus-within {
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+    border-color: transparent;
+}
+
+.search-icon, .voice-icon {
+    color: #9aa0a6;
+    padding: 0 8px;
+    font-size: 1.2rem;
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #202124;
+    background: transparent;
+    padding: 0 8px;
+    width: 100%;
+}
+
+.search-box input::placeholder {
+    color: #9aa0a6;
+}
+
+.search-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.google-style-button {
+    border: 1px solid #f8f9fa;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 11px 4px;
+    padding: 0 16px;
+    height: 36px;
+    min-width: 120px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.google-style-button.primary {
+    background-color: #4285f4;
+    color: white;
+    border-color: #4285f4;
+}
+
+.google-style-button.secondary {
+    background-color: #f8f9fa;
+    color: #3c4043;
+}
+
+.google-style-button:hover {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #dadce0;
+}
+
+.google-style-button.primary:hover {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+}
+
+.feature-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+    width: 100%;
+}
+
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+    transform: translateY(-2px);
+}
+
+.feature-card i {
+    font-size: 24px;
+}
+
+.feature-card span {
+    color: #5f6368;
+    font-size: 14px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .search-container {
+        margin-top: 5vh;
+        padding: 0 16px;
+    }
+
+    .logo-letters {
+        font-size: 4rem;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        margin: 0 16px;
+    }
+
+    .feature-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}

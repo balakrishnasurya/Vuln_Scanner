@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Scan History | Web Security Scanner{% endblock %}
+
+{% block content %}
+<main>
+    <section class="results-header">
+        <h1>Scan History</h1>
+        <p>View and manage your previous security scans</p>
+    </section>
+
+    <div class="filters-container">
+        <div class="filter-group">
+            <label for="dateRange">Date Range:</label>
+            <select id="dateRange" onchange="applyFilters()">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="severity">Severity:</label>
+            <select id="severity" onchange="applyFilters()">
+                <option value="all">All Severities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
+        <button class="btn secondary" onclick="exportData('csv')">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Target URL</th>
+                    <th>Vulnerabilities</th>
+                    <th>Severity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in scans %}
+                <tr>
+                    <td>{{ scan.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ scan.url }}</td>
+                    <td>{{ scan.results|length }}</td>
+                    <td>
+                        {% set high_count = scan.severity_distribution.get('High', 0) %}
+                        {% if high_count > 0 %}
+                        <span class="severity-badge high">
+                            <i class="fas fa-exclamation-circle"></i> High
+                        </span>
+                        {% else %}
+                        {% set medium_count = scan.severity_distribution.get('Medium', 0) %}
+                        {% if medium_count > 0 %}
+                        <span class="severity-badge medium">
+                            <i class="fas fa-exclamation-triangle"></i> Medium
+                        </span>
+                        {% else %}
+                        <span class="severity-badge low">
+                            <i class="fas fa-info-circle"></i> Low
+                        </span>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('view_scan', scan_id=scan.id) }}" class="btn secondary btn-sm">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{{ url_for('download_report', scan_id=scan.id) }}" class="btn primary btn-sm">
+                            <i class="fas fa-file-pdf"></i> Report
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('history', page=pagination.prev_num) }}" class="btn secondary btn-sm">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        <span class="page-info">
+            Page {{ pagination.page }} of {{ pagination.pages }}
+        </span>
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('history', page=pagination.next_num) }}" class="btn secondary btn-sm">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function applyFilters() {
+    const dateRange = document.getElementById('dateRange').value;
+    const severity = document.getElementById('severity').value;
+    window.location.href = `/history?date=${dateRange}&severity=${severity}`;
+}
+
+function exportData(format) {
+    const dateRange = document.getElementById('dateRange').value;
+    const severity = document.getElementById('severity').value;
+    window.location.href = `/export?format=${format}&date=${dateRange}&severity=${severity}`;
+}
+</script>
+{% endblock %}
