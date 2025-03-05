@@ -5,16 +5,19 @@
 {% block content %}
 <div class="google-style-container">
     <div class="search-container">
-        <div class="logo">
-            <div class="logo-letters">
-                <span style="color: #4285f4">S</span>
-                <span style="color: #ea4335">e</span>
-                <span style="color: #fbbc05">c</span>
-                <span style="color: #4285f4">u</span>
-                <span style="color: #34a853">r</span>
-                <span style="color: #ea4335">e</span>
+        <div class="logo-container">
+            <div class="logo-wrapper">
+                <div class="logo-letters">
+                    <span class="letter s" style="color: #4285f4">S</span>
+                    <span class="letter e" style="color: #ea4335">e</span>
+                    <span class="letter c" style="color: #fbbc05">c</span>
+                    <span class="letter u" style="color: #4285f4">u</span>
+                    <span class="letter r" style="color: #34a853">r</span>
+                    <span class="letter e" style="color: #ea4335">e</span>
+                </div>
+                <div class="logo-text">Scanner</div>
             </div>
-            <div class="logo-text">Scanner</div>
+            <p class="logo-tagline">Check your website's security in seconds</p>
         </div>
         
         <form action="{{ url_for('scan') }}" method="POST" class="google-style-form">
@@ -75,18 +78,38 @@
     padding: 20px;
 }
 
-.logo {
+.logo-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .logo-letters {
     font-family: 'Product Sans', Arial, sans-serif;
-    font-size: 5rem;
+    font-size: 5.5rem;
     font-weight: 400;
-    letter-spacing: -2px;
+    letter-spacing: -4px;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+}
+
+.letter {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.letter:hover {
+    transform: translateY(-2px);
 }
 
 .logo-text {
@@ -94,6 +117,14 @@
     font-size: 2rem;
     color: #5f6368;
     margin-top: -0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.logo-tagline {
+    color: #5f6368;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    font-weight: 400;
 }
 
 .search-box {
@@ -216,6 +247,17 @@
     text-align: center;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 600px) {
     .search-container {
         margin-top: 5vh;
@@ -223,11 +265,17 @@
     }
 
     .logo-letters {
-        font-size: 4rem;
+        font-size: 4.5rem;
     }
 
     .logo-text {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
+    }
+
+    .logo-tagline {
+        font-size: 1rem;
+        padding: 0 16px;
+        text-align: center;
     }
 
     .search-box {
