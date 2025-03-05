@@ -5,7 +5,19 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
-        <h1><i class="fas fa-user-plus"></i> Create Account</h1>
+        <div class="auth-header">
+            <div class="logo-letters" style="font-size: 2rem;">
+                <span style="color: #4285f4">S</span>
+                <span style="color: #ea4335">e</span>
+                <span style="color: #fbbc05">c</span>
+                <span style="color: #4285f4">u</span>
+                <span style="color: #34a853">r</span>
+                <span style="color: #ea4335">e</span>
+            </div>
+            <div class="logo-text">Scanner</div>
+            <h1>Create your Account</h1>
+            <p class="subtitle">Join SecureScanner to protect your websites</p>
+        </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -17,14 +29,15 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="{{ url_for('register') }}">
+        <form method="POST" action="{{ url_for('register') }}" class="material-form">
             {{ form.csrf_token }}
             
             <div class="form-group">
-                <label for="username">
-                    <i class="fas fa-user"></i> Username
-                </label>
-                {{ form.username(class="form-control", placeholder="Choose a username") }}
+                <div class="material-input">
+                    {{ form.username(class="form-control", placeholder=" ") }}
+                    <label for="username">Username</label>
+                    <div class="input-line"></div>
+                </div>
                 {% if form.username.errors %}
                     {% for error in form.username.errors %}
                         <span class="error-message">{{ error }}</span>
@@ -33,10 +46,11 @@
             </div>
 
             <div class="form-group">
-                <label for="email">
-                    <i class="fas fa-envelope"></i> Email Address
-                </label>
-                {{ form.email(class="form-control", placeholder="Enter your email") }}
+                <div class="material-input">
+                    {{ form.email(class="form-control", placeholder=" ") }}
+                    <label for="email">Email address</label>
+                    <div class="input-line"></div>
+                </div>
                 {% if form.email.errors %}
                     {% for error in form.email.errors %}
                         <span class="error-message">{{ error }}</span>
@@ -44,40 +58,205 @@
                 {% endif %}
             </div>
 
-            <div class="form-group">
-                <label for="password">
-                    <i class="fas fa-lock"></i> Password
-                </label>
-                {{ form.password(class="form-control", placeholder="Create a password") }}
-                {% if form.password.errors %}
-                    {% for error in form.password.errors %}
-                        <span class="error-message">{{ error }}</span>
-                    {% endfor %}
-                {% endif %}
+            <div class="form-row">
+                <div class="form-group half">
+                    <div class="material-input">
+                        {{ form.password(class="form-control", placeholder=" ") }}
+                        <label for="password">Password</label>
+                        <div class="input-line"></div>
+                    </div>
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <span class="error-message">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group half">
+                    <div class="material-input">
+                        {{ form.confirm_password(class="form-control", placeholder=" ") }}
+                        <label for="confirm_password">Confirm</label>
+                        <div class="input-line"></div>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        {% for error in form.confirm_password.errors %}
+                            <span class="error-message">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="confirm_password">
-                    <i class="fas fa-lock"></i> Confirm Password
-                </label>
-                {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
-                {% if form.confirm_password.errors %}
-                    {% for error in form.confirm_password.errors %}
-                        <span class="error-message">{{ error }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            <p class="password-hint">Use 8 or more characters with a mix of letters, numbers & symbols</p>
 
-            <div class="form-actions">
-                <button type="submit" class="btn primary">
-                    <i class="fas fa-user-plus"></i> Create Account
+            <div class="form-actions-register">
+                <a href="{{ url_for('login') }}" class="google-style-button secondary">
+                    Sign in instead
+                </a>
+                <button type="submit" class="google-style-button primary">
+                    Create account
                 </button>
             </div>
         </form>
-
-        <div class="auth-links">
-            <a href="{{ url_for('login') }}">Already have an account? Login</a>
-        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 64px - 76px);
+    padding: 24px;
+    background: var(--google-background);
+}
+
+.auth-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    padding: 48px;
+    width: 100%;
+    max-width: 450px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header .logo-letters {
+    font-family: 'Product Sans', Arial, sans-serif;
+    margin-bottom: 8px;
+}
+
+.auth-header .logo-text {
+    font-family: 'Product Sans', Arial, sans-serif;
+    color: #5f6368;
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+}
+
+.auth-header h1 {
+    color: #202124;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #5f6368;
+    font-size: 16px;
+    margin-bottom: 0;
+}
+
+.material-form {
+    margin-top: 32px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.form-group.half {
+    flex: 1;
+    margin-bottom: 16px;
+}
+
+.material-input {
+    position: relative;
+    margin-top: 16px;
+}
+
+.material-input input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.material-input label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 4px;
+    color: #5f6368;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.material-input input:focus,
+.material-input input:not(:placeholder-shown) {
+    border-color: var(--google-blue);
+    border-width: 2px;
+}
+
+.material-input input:focus + label,
+.material-input input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 12px;
+    color: var(--google-blue);
+}
+
+.password-hint {
+    color: #5f6368;
+    font-size: 12px;
+    margin: 0 0 24px;
+}
+
+.form-actions-register {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.error-message {
+    color: var(--google-red);
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 24px;
+        box-shadow: none;
+    }
+    
+    .auth-container {
+        padding: 0;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .form-actions-register {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .form-actions-register .google-style-button {
+        width: 100%;
+    }
+}
+</style>
 {% endblock %}
