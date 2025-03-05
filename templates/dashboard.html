@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                SecureScanner
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/" class="btn primary">New Scan</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="results-header">
+            <h1>Security Dashboard</h1>
+            <p>Monitoring and analysis of web security vulnerabilities</p>
+            <div class="actions">
+                <a href="/" class="btn primary"><i class="fas fa-search"></i> New Scan</a>
+                {% if has_data %}
+                <a href="/export-pdf" class="btn secondary"><i class="fas fa-file-pdf"></i> Export Report</a>
+                {% endif %}
+            </div>
+        </section>
+        
+        <section class="dashboard-stats">
+            <div class="section-title">
+                <h2>Overview</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Scans</h3>
+                        <p class="stat-value">{{ total_scans }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>High Severity</h3>
+                        <p class="stat-value">{{ high_severity }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Medium Severity</h3>
+                        <p class="stat-value">{{ medium_severity }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Low Severity</h3>
+                        <p class="stat-value">{{ low_severity }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        {% if not has_data %}
+        <section class="dashboard-message">
+            <div class="message-card">
+                <div class="message-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2>No Scan Data Available</h2>
+                <p>Start scanning websites to populate this dashboard with vulnerability data.</p>
+                <a href="/" class="btn primary"><i class="fas fa-search"></i> Start Scanning</a>
+            </div>
+        </section>
+        {% else %}
+        <section class="visualization-section">
+            <div class="section-title">
+                <h2>Vulnerability Analysis</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
+                    <div class="chart-body">
+                        <!-- Add your charts here -->
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Vulnerability Types</h3>
+                    <div class="chart-body">
+                        <!-- Add your charts here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="recent-scans">
+            <div class="section-title">
+                <h2>Recent Scans</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-history"></i> Latest Security Scans</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Scan Date</th>
+                            <th>Vulnerabilities</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in recent_scans %}
+                        <tr>
+                            <td>{{ scan.url }}</td>
+                            <td>{{ scan.date }}</td>
+                            <td>{{ scan.vulnerabilities }}</td>
+                            <td>
+                                <span class="severity-badge {{ scan.status|lower }}">
+                                    {{ scan.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/results/{{ scan.id }}" class="btn secondary btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="copyright">
+                <p>&copy; 2024 Web Security Scanner</p>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/">New Scan</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

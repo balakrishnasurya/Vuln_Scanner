@@ -187,60 +187,40 @@
             border-bottom: none;
         }
 
-        .btn {
-            background: #f8f9fa;
-            border: 1px solid #f8f9fa;
-            border-radius: 4px;
-            color: #3c4043;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            box-shadow: 0 1px 1px rgba(0,0,0,.1);
-            background-color: #f8f9fa;
-            border: 1px solid #dadce0;
-            color: #202124;
-        }
-
-        .btn.primary {
-            background: #4285f4;
-            color: white;
-            border: 1px solid #4285f4;
-        }
-
-        .btn.primary:hover {
-            background: #3574e5;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        .actions {
+        /* Button group styles */
+        .view-controls {
             display: flex;
-            gap: 12px;
             justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
         }
 
-        footer {
-            background: #f8f9fa;
-            padding: 24px;
-            border-top: 1px solid #dfe1e5;
-            margin-top: 60px;
+        .view-controls .btn {
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        @media (max-width: 768px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            .actions .btn {
-                width: 100%;
-            }
+        .view-controls .btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Section display styles */
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -248,12 +228,12 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo">
-                <i class="fas fa-shield-alt"></i>
-                SecureScanner
+                <i class="fas fa-shield-alt"></i> Web Security Scanner
             </a>
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="/" class="btn primary">New Scan</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
             </div>
         </div>
     </nav>
@@ -267,7 +247,7 @@
                     <i class="fas fa-arrow-left"></i> New Scan
                 </a>
                 {% if pdf_url %}
-                <a href="{{ pdf_url }}" class="btn primary" onclick="event.preventDefault(); window.location.href='{{ pdf_url }}';">
+                <a href="{{ pdf_url }}" class="btn primary">
                     <i class="fas fa-file-pdf"></i> Download Report
                 </a>
                 {% else %}
@@ -302,13 +282,28 @@
             </div>
         </div>
 
-        <div class="charts-grid">
+        <div class="view-controls">
+            <button class="btn secondary active" onclick="showSection('pieChart')">
+                <i class="fas fa-chart-pie"></i> Severity Distribution
+            </button>
+            <button class="btn secondary" onclick="showSection('barGraph')">
+                <i class="fas fa-chart-bar"></i> Vulnerability Types
+            </button>
+            <button class="btn secondary" onclick="showSection('table')">
+                <i class="fas fa-table"></i> Detailed Results
+            </button>
+        </div>
+
+        <div id="pieChart" class="result-section active">
             <div class="chart-card">
                 <h3><i class="fas fa-chart-pie"></i> Severity Distribution</h3>
                 <div class="chart-body">
                     <img src="data:image/png;base64,{{ plot1 }}" alt="Severity Distribution" class="chart">
                 </div>
             </div>
+        </div>
+
+        <div id="barGraph" class="result-section">
             <div class="chart-card">
                 <h3><i class="fas fa-chart-bar"></i> Vulnerability Types</h3>
                 <div class="chart-body">
@@ -317,38 +312,40 @@
             </div>
         </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Vulnerability</th>
-                        <th>Description</th>
-                        <th>Risk Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for result in results %}
-                    <tr>
-                        <td><strong>{{ result.type }}</strong></td>
-                        <td>{{ result.name }}</td>
-                        <td>{{ result.description }}</td>
-                        <td>
-                            <span class="severity-badge {{ result.severity|lower }}">
-                                {% if result.severity == 'High' %}
-                                <i class="fas fa-exclamation-circle"></i>
-                                {% elif result.severity == 'Medium' %}
-                                <i class="fas fa-exclamation-triangle"></i>
-                                {% else %}
-                                <i class="fas fa-info-circle"></i>
-                                {% endif %}
-                                {{ result.severity }}
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div id="table" class="result-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Vulnerability</th>
+                            <th>Description</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td><strong>{{ result.type }}</strong></td>
+                            <td>{{ result.name }}</td>
+                            <td>{{ result.description }}</td>
+                            <td>
+                                <span class="severity-badge {{ result.severity|lower }}">
+                                    {% if result.severity == 'High' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {% elif result.severity == 'Medium' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                    {{ result.severity }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -364,5 +361,23 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.result-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update button states
+            document.querySelectorAll('.view-controls .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+    </script>
 </body>
 </html>
